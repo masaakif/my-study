@@ -10,9 +10,37 @@ public:
     }
 };
 
-class List {
+class Iterator {
+    Node* current;
 public:
+    Iterator(Node* n) {
+        current = n;
+    }
+    void next() {
+        current = current->next;
+    }
+    void removeNext() {
+        auto next = current->next;
+        current->next = next->next;
+        delete next;
+    }
+    Node* get() {
+        return current;
+    }
+};
+
+class List {
     Node* first = nullptr;
+    Iterator* it = nullptr;
+public:
+    ~List() {
+        while (first != nullptr) {
+            removeFirst();
+        }
+        if (it != nullptr) {
+            delete it;
+        }
+    }
     void add(Node* newNode) {
         if (first == nullptr) {
             first = newNode;
@@ -21,6 +49,9 @@ public:
             last->next = newNode;
         }
     };
+    Node* getFirst() {
+        return first;
+    }
     void removeFirst() {
         if (first != nullptr) {
             auto next = first->next;
@@ -28,7 +59,7 @@ public:
             first = next;
         }
     };
-    void remove(Node* prev) {
+    void removeNext(Node* prev) {
         auto target = prev->next;
         if (target != nullptr) {
             prev->next = target->next;
@@ -40,7 +71,7 @@ public:
         first = newNode;
         first->next = np;
     }
-    void insert(Node* prev, Node* newNode) {
+    void insertNext(Node* prev, Node* newNode) {
         auto currentNext = prev->next;
         prev->next = newNode;
         prev->next->next = currentNext;
@@ -55,19 +86,24 @@ public:
         }
         return n;
     }
+    Iterator* iterator() {
+        if (it != nullptr) {
+            delete it;
+        }
+        it = new Iterator(first);
+        return it;
+    }
 };
 
 void outputList(List* l) {
-    auto it = l->first;
-    while (it != nullptr) {
-        cout << it->value;
-        it = it->next;
-        if (it != nullptr) {
-            cout << "->";
-        }
+    auto it = l->iterator();
+    for (auto it = l->iterator(); it->get() != nullptr; it->next()) {
+        cout << it->get()->value;
+        cout << "->";
     }
     cout << endl;
 }
+
 int main() {
     List list;
     for (int i = 0; i < 10; i++) {
@@ -77,24 +113,33 @@ int main() {
     outputList(&list);
     list.removeFirst();
     outputList(&list);
-    auto n = list.first->next->next->next->next;
+    auto n = list.getFirst()->next->next->next->next;
     cout << n->value << endl;
-    list.remove(n);
+    list.removeNext(n);
     outputList(&list);
     list.insertFirst(new Node(99));
     outputList(&list);
-    n = list.first->next->next->next->next->next->next;
+    n = list.getFirst()->next->next->next->next->next->next;
     cout << n->value << endl;
-    list.insert(n, new Node(77));
+    list.insertNext(n, new Node(77));
     outputList(&list);
-    list.remove(list.first);
+    list.removeNext(list.getFirst());
     outputList(&list);
     n = list.getLast();
-    list.remove(n);
+    list.removeNext(n);
     outputList(&list);
-    list.insert(n, new Node(123));
+    list.insertNext(n, new Node(123));
     outputList(&list);
-    list.remove(n);
+    list.removeNext(n);
+    outputList(&list);
+    
+    cout << "Iterator operation" << endl;
+    auto it = list.iterator();
+    it->next();
+    cout << it->get()->value << endl;
+    it->next();
+    cout << it->get()->value << endl;
+    it->removeNext();
     outputList(&list);
     
     return 0;
