@@ -17,7 +17,7 @@ public:
         if (first == nullptr) {
             first = n;
         } else {
-            auto* it = first;
+            auto it = first;
             while (it->next != nullptr) {
                 it = it->next;
             }
@@ -61,7 +61,7 @@ public:
 };
 
 void outputList(List* l) {
-    auto* it = l->first;
+    auto it = l->first;
     while (it != nullptr) {
         cout << it->value;
         it = it->next;
