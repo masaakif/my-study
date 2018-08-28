@@ -13,15 +13,12 @@ public:
 class List {
 public:
     Node* first = nullptr;
-    void add(Node* n) {
+    void add(Node* newNode) {
         if (first == nullptr) {
-            first = n;
+            first = newNode;
         } else {
-            auto it = first;
-            while (it->next != nullptr) {
-                it = it->next;
-            }
-            it->next = n;
+            auto last = getLast();
+            last->next = newNode;
         }
     };
     void removeFirst() {
